@@ -61,7 +61,7 @@ fun juego(navController: NavHostController) {
         var visible by remember {
             mutableStateOf(false)
         }
-        Button(onClick = { visible = !visible }, modifier = Modifier.padding(end = 175.dp)) { Text("Toggle") }
+        Button(onClick = { visible = !visible }, modifier = Modifier.padding(end = 175.dp)) { Text("Show/\nHide") }
         AnimatedVisibility(visible = visible, enter = fadeIn(initialAlpha = 0.4f),
             exit = fadeOut(animationSpec = tween(durationMillis = 250))) {
             Text(text = secretNumber, style = TextStyle(fontWeight = FontWeight.Bold), textAlign = TextAlign.Center,
@@ -70,8 +70,7 @@ fun juego(navController: NavHostController) {
         //fin numero random y boton
 
         //cuadro de texto
-        var text by remember { mutableStateOf(TextFieldValue("0")) }
-        val guess by remember {  mutableStateOf(text.text.toInt()) }
+        var text by remember { mutableStateOf(TextFieldValue("")) }
         val maxChar = 5
         OutlinedTextField(
             value = text,
@@ -101,14 +100,16 @@ fun randomNumber():String{
         return (Math.random() * (end - start + 1)).toInt() + start
     }
     var numString = rand(0,99999).toString()
-    while (numString.length<5){
-        numString= "0$numString"
-    }
+    numString=rellenaCifras(numString)
     return numString
 }
 
-fun Comparar(secret:Int,guess:Int):Boolean{
-    return secret == guess
+fun rellenaCifras(numero:String):String{
+    var numero=numero
+    while (numero.length<5){
+        numero= "0$numero"
+    }
+    return numero
 }
 
 @Composable
