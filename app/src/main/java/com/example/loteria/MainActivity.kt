@@ -1,5 +1,6 @@
 package com.example.loteria
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +16,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,13 +30,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import com.example.loteria.ui.theme.LoteriaTheme
+import java.nio.file.Files.size
+import android.util.Size as Size1
 
 val secretNumber = randomNumber()
+
 
 class MainActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setContent {
 
@@ -41,7 +53,7 @@ class MainActivity() : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                   navigation()
+                   Navigation()
 
                 }
             }
@@ -50,7 +62,7 @@ class MainActivity() : ComponentActivity() {
 }
 
 @Composable
-fun juego(navController: NavHostController) {
+fun Aplicacion(navController: NavHostController) {
 
     //titulo
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
@@ -113,32 +125,45 @@ fun rellenaCifras(numero:String):String{
 }
 
 @Composable
-fun acierto(){
-    Box(contentAlignment = Alignment.Center) {
-        Text(text = "has acertado")
+fun Acierto(){
+    val context = LocalContext.current
+    Box(contentAlignment = Alignment.Center,
+    modifier = Modifier.fillMaxSize()){
+        Text(text = "Has acertado", fontSize = 24.sp)
+        Text(text = "Has ganado 5000 forintos hungaros", fontSize = 20.sp, modifier = Modifier.padding(top=75.dp))
+        val musica = MediaPlayer.create(context,R.raw.acierto)
+        musica.start()
+        Image(painter = painterResource(id = R.drawable.david), contentDescription = null,
+            modifier = Modifier.padding(bottom = 275.dp), contentScale = ContentScale.Fit)
+
     }
 }
 
 @Composable
-fun fallo(){
-    Row() {
-        Text(text = "has fallado")
+fun Fallo(){
+    val context = LocalContext.current
+    val musicaFallo:MediaPlayer = MediaPlayer.create(context,R.raw.fallo)
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()) {
+        Text(text = "Has fallado", fontSize = 24.sp)
+        Text(text = "El numero ganador es $secretNumber", fontSize = 20.sp, modifier = Modifier.padding(top = 75.dp))
+        musicaFallo.start()
+        Image(painter = painterResource(id = R.drawable.cabezafallo), contentDescription = null, modifier = Modifier.padding(top = 125.dp))
     }
 }
 
 @Composable
-fun navigation(){
+fun Navigation(){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            juego(navController)
+            Aplicacion(navController)
         }
         composable("Acierto"){
-            acierto()
+            Acierto()
         }
         composable("Fallo"){
-            fallo()
+            Fallo()
         }
     }
 }
-
