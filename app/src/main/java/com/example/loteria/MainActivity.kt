@@ -1,5 +1,8 @@
 package com.example.loteria
 
+import android.content.ComponentName
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,30 +34,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import coil.decode.GifDecoder
-import coil.request.ImageRequest
+import coil.decode.ImageDecoderDecoder
 import com.example.loteria.ui.theme.LoteriaTheme
-import java.nio.file.Files.size
-import android.util.Size as Size1
 
-val secretNumber = randomNumber()
+val secretNumber = numeroSecreto()
 
 
 class MainActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContent {
-
             LoteriaTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
                 ) {
                    Navigation()
-
                 }
             }
         }
@@ -106,7 +101,7 @@ fun Aplicacion(navController: NavHostController) {
     //fin cuadro de texto
     }
 
-fun randomNumber():String{
+fun numeroSecreto():String{
     fun rand(start: Int, end: Int): Int {
         require(start <= end) { "Illegal Argument" }
         return (Math.random() * (end - start + 1)).toInt() + start
@@ -135,7 +130,7 @@ fun Acierto(){
         musica.start()
         Image(painter = painterResource(id = R.drawable.david), contentDescription = null,
             modifier = Modifier.padding(bottom = 275.dp), contentScale = ContentScale.Fit)
-
+        GifGanar(modifier = Modifier.padding(top = 300.dp))
     }
 }
 
@@ -148,7 +143,9 @@ fun Fallo(){
         Text(text = "Has fallado", fontSize = 24.sp)
         Text(text = "El numero ganador es $secretNumber", fontSize = 20.sp, modifier = Modifier.padding(top = 75.dp))
         musicaFallo.start()
-        Image(painter = painterResource(id = R.drawable.cabezafallo), contentDescription = null, modifier = Modifier.padding(top = 125.dp))
+        GifPerder(modifier = Modifier.padding(bottom = 250.dp))
+        Image(painter = painterResource(id = R.drawable.mclovin), contentDescription = null,
+            modifier = Modifier.padding(top = 275.dp), contentScale = ContentScale.Fit)
     }
 }
 
@@ -166,4 +163,46 @@ fun Navigation(){
             Fallo()
         }
     }
+}
+
+@Composable
+fun GifGanar(modifier: Modifier,) {
+    val context = LocalContext.current
+    val imageLoader = coil.ImageLoader.Builder(context)
+        .components{
+            add(ImageDecoderDecoder.Factory())
+        }
+        .build()
+    Image(painter = rememberAsyncImagePainter(
+        coil.request.ImageRequest.Builder(context).data(data = R.drawable.aplausos)
+            .apply (block = {
+                
+            }).build(), imageLoader = imageLoader
+            ),
+        contentDescription = null,
+        modifier = modifier
+            .fillMaxWidth()
+            .size(150.dp, 180.dp)
+    )
+}
+
+@Composable
+fun GifPerder(modifier: Modifier,) {
+    val context = LocalContext.current
+    val imageLoader = coil.ImageLoader.Builder(context)
+        .components{
+            add(ImageDecoderDecoder.Factory())
+        }
+        .build()
+    Image(painter = rememberAsyncImagePainter(
+        coil.request.ImageRequest.Builder(context).data(data = R.drawable.cabezafallo)
+            .apply (block = {
+
+            }).build(), imageLoader = imageLoader
+    ),
+        contentDescription = null,
+        modifier = modifier
+            .fillMaxWidth()
+            .size(150.dp, 180.dp)
+    )
 }
